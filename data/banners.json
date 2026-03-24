@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Next-Gen Audio Experience",
+    "subtitle": "Premium Wireless Headphones with Active Noise Cancellation",
+    "image": "https://picsum.photos/seed/banner1/1200/600",
+    "cta": "Shop Now",
+    "link": "/products",
+    "color": "bg-indigo-600"
+  },
+  {
+    "title": "Ultra-Thin Laptops",
+    "subtitle": "Power meets portability in our latest collection",
+    "image": "https://picsum.photos/seed/banner2/1200/600",
+    "cta": "Explore Models",
+    "link": "/products",
+    "color": "bg-emerald-600"
+  },
+  {
+    "title": "Smart Living",
+    "subtitle": "Upgrade your home with the latest smart devices",
+    "image": "https://picsum.photos/seed/banner3/1200/600",
+    "cta": "Learn More",
+    "link": "/products",
+    "color": "bg-slate-900"
+  }
+]
