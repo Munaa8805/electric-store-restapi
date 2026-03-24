@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -12,7 +14,11 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(__dirname, 'public');
+
 app.set('trust proxy', 1);
+
 
 app.use(helmet());
 app.use(
@@ -40,15 +46,12 @@ app.use(mongoSanitize({ replaceWith: '_' }));
 app.use(hpp());
 app.use(morgan(env.isProd ? 'combined' : 'dev'));
 
-app.get('/', (_req, res) => {
-  res.json({
-    success: true,
-    message: 'Electronic Store API',
-    entry: '/api/v1/health',
-    auth: '/api/v1/auth/register | /api/v1/auth/login',
-    profile: 'GET|PATCH /api/v1/users/me (Bearer token)',
-  });
-});
+app.use(
+  express.static(publicDir, {
+    index: 'index.html',
+    maxAge: env.isProd ? '1d' : 0,
+  })
+);
 
 app.use('/api/v1', apiV1Router);
 
