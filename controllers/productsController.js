@@ -109,6 +109,17 @@ export const getProductsDiscounted = async (req, res) => {
     });
 };
 
+export const getHighestDiscountedProducts = async (req, res) => {
+    const filter = { discountPrice: { $ne: null } };
+    const products = await Product.find(filter).sort({ discountPrice: -1 }).limit(4);
+    res.status(200).json({
+        success: true,
+        data: products,
+    });
+};
+
+
+
 export const getProductById = async (req, res) => {
     const product = await Product.findById(req.params.id);
     res.status(200).json({
