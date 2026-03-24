@@ -9,9 +9,7 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "seed": "node scripts/seed.js",
-    "test": "echo \"No tests yet\" && exit 0"
+    "dev": "node --watch src/server.js"
   },
   "keywords": [
     "express",
@@ -33,6 +31,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
+    "serverless-http": "^4.0.0",
     "zod": "^3.24.1"
   }
 }

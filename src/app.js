@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
+import serverless from 'serverless-http';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
@@ -58,4 +59,8 @@ app.use('/api/v1', apiV1Router);
 app.use(notFound);
 app.use(errorHandler);
 
+/** AWS Lambda / adapters that require `export default` to be a function */
+const serverlessHandler = serverless(app);
+
 export { app };
+export default serverlessHandler;
