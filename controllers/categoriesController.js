@@ -1,4 +1,6 @@
 import { Category } from '../models/Category.js';
+import '../models/Product.js';
+
 
 export const getCategories = async (req, res) => {
     const categories = await Category.find();
@@ -30,5 +32,19 @@ export const deleteCategory = async (req, res) => {
     res.status(204).json({
         success: true,
         data: null,
+    });
+};
+
+export const getCategoryById = async (req, res) => {
+    const category = await Category.findById(req.params.id).populate({
+        path: 'products',
+        options: { sort: { createdAt: -1 } },
+    });
+    if (!category) {
+        return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+    res.status(200).json({
+        success: true,
+        data: category,
     });
 };

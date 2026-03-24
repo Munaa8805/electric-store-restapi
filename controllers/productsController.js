@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Product } from '../models/Product.js';
 
 function parsePagination(query, { defaultLimit = 10, maxLimit = 100 } = {}) {
@@ -8,10 +9,43 @@ function parsePagination(query, { defaultLimit = 10, maxLimit = 100 } = {}) {
     return { page, limit, skip };
 }
 
+function firstQueryValue(value) {
+    if (value === undefined || value === null) return '';
+    const v = Array.isArray(value) ? value[0] : value;
+    try {
+        return decodeURIComponent(String(v)).trim();
+    } catch {
+        return String(v).trim();
+    }
+}
+
+/**
+ * Supports `?category=<id>` or `?categoryId=<id>` (Express may pass repeated keys as an array).
+ * Casts to ObjectId so queries match `category` refs in MongoDB reliably.
+ */
+function applyCategoryFilter(query, filter) {
+    const idStr =
+        firstQueryValue(query.category) || firstQueryValue(query.categoryId);
+    if (!idStr) {
+        return { ok: true, filter };
+    }
+    if (!mongoose.isValidObjectId(idStr)) {
+        return { ok: false, message: 'Invalid category id' };
+    }
+    return {
+        ok: true,
+        filter: { ...filter, category: new mongoose.Types.ObjectId(idStr) },
+    };
+}
+
 export const getProducts = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
 
-    const filter = {};
+    const categoryResult = applyCategoryFilter(req.query, {});
+    if (!categoryResult.ok) {
+        return res.status(400).json({ success: false, message: categoryResult.message });
+    }
+    const filter = categoryResult.filter;
 
     const [total, products] = await Promise.all([
         Product.countDocuments(filter),
@@ -36,7 +70,12 @@ export const getProducts = async (req, res) => {
 
 export const getProductsFeatured = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
-    const filter = { isFeatured: true };
+
+    const categoryResult = applyCategoryFilter(req.query, { isFeatured: true });
+    if (!categoryResult.ok) {
+        return res.status(400).json({ success: false, message: categoryResult.message });
+    }
+    const filter = categoryResult.filter;
 
     const [total, products] = await Promise.all([
         Product.countDocuments(filter),
