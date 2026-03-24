@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import productsRoutes from './routes/productsRoutes.js';
 import categoriesRoutes from './routes/categoriesRoutes.js';
 import bannerRoutes from './routes/bannerRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 
@@ -74,9 +75,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/categories', categoriesRoutes);
 app.use('/api/v1/banners', bannerRoutes);
+
 app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Not found' });
 });
