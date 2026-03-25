@@ -1,10 +1,11 @@
 import express from 'express';
-import { toggleToWishlist, getWishlist } from '../controllers/wishlistController.js';
+import { addToWishlist, removeFromWishlist, getWishlist } from '../controllers/wishlistController.js';
 import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/toggle', authenticate, toggleToWishlist);
+router.post('/add', authenticate, addToWishlist);
+router.delete('/remove', authenticate, removeFromWishlist);
 router.get('/', authenticate, getWishlist);
 
 
