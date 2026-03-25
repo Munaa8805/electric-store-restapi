@@ -10,6 +10,7 @@ import bannerRoutes from './routes/bannerRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 
@@ -84,6 +85,7 @@ app.use('/api/v1/categories', categoriesRoutes);
 app.use('/api/v1/banners', bannerRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/wishlist', wishlistRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Not found' });

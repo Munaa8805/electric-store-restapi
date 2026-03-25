@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { Product } from '../models/Product.js';
 
-function parsePagination(query, { defaultLimit = 10, maxLimit = 100 } = {}) {
+function parsePagination(query, { defaultLimit = 5, maxLimit = 100 } = {}) {
     const page = Math.max(1, Number.parseInt(String(query.page), 10) || 1);
-    const rawLimit = Number.parseInt(String(query.limit), 10) || defaultLimit;
+    const rawLimit = Number.parseInt(String(query.limit), 5) || defaultLimit;
     const limit = Math.min(maxLimit, Math.max(1, rawLimit));
     const skip = (page - 1) * limit;
     return { page, limit, skip };
