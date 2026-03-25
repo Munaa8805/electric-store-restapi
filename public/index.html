@@ -1,14 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electronic Store API — Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --border: #2d3a4d;
+      --text: #e7edf4;
+      --muted: #8b9cb3;
+      --accent: #3d9cf5;
+      --get: #34c759;
+      --post: #ff9f0a;
+      --put: #bf5af2;
+      --delete: #ff453a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 1rem;
+    }
+    code, pre {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8125rem;
+    }
+    header {
+      padding: 2.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(165deg, var(--surface) 0%, var(--bg) 100%);
+    }
+    header h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    header p { margin: 0; color: var(--muted); max-width: 52rem; }
+    .base-url {
+      margin-top: 1rem;
+      padding: 0.65rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: inline-block;
+    }
+    .base-url code { color: var(--accent); }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
+    }
+    @media (min-width: 880px) {
+      .layout {
+        grid-template-columns: 200px minmax(0, 1fr);
+        gap: 2.5rem;
+        max-width: 1100px;
+      }
+    }
+    nav.toc {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      padding: 1rem 0;
+    }
+    nav.toc h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 0 0 0.75rem;
+    }
+    nav.toc a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
+      border-left: 2px solid transparent;
+      padding-left: 0.6rem;
+      margin-left: -0.6rem;
+    }
+    nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+    main { padding: 1.5rem 0; min-width: 0; }
+    section {
+      margin-bottom: 2.75rem;
+      scroll-margin-top: 1rem;
+    }
+    section > h2 {
+      font-size: 1.25rem;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .endpoint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .endpoint h3 {
+      margin: 0 0 0.65rem;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .method {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: "IBM Plex Mono", monospace;
+    }
+    .method.get { background: rgba(52, 199, 89, 0.2); color: var(--get); }
+    .method.post { background: rgba(255, 159, 10, 0.2); color: var(--post); }
+    .method.put { background: rgba(191, 90, 242, 0.2); color: var(--put); }
+    .method.delete { background: rgba(255, 69, 58, 0.2); color: var(--delete); }
+    .path { color: var(--accent); word-break: break-all; }
+    .endpoint p.desc { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.925rem; }
+    .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 0.75rem 0 0.35rem;
+    }
+    pre {
+      margin: 0;
+      padding: 0.85rem 1rem;
+      background: #0a0e12;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      color: #c8d4e0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .note {
+      margin-top: 1.5rem;
+      padding: 1rem 1.1rem;
+      background: rgba(61, 156, 245, 0.08);
+      border: 1px solid rgba(61, 156, 245, 0.25);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .note strong { color: var(--text); }
+  </style>
 </head>
-
 <body>
-    <h1>Hello World</h1>
-</body>
+  <header>
+    <h1>Electronic Store REST API</h1>
+    <p>JSON API served from this host. All paths are prefixed with the base URL below unless noted.</p>
+    <p class="base-url">Base URL: <code id="base-display">/api/v1</code> <span style="color:var(--muted); font-size:0.9rem">(same origin as this page)</span></p>
+  </header>
 
+  <div class="layout">
+    <nav class="toc" aria-label="Documentation sections">
+      <h2>Contents</h2>
+      <a href="#conventions">Conventions</a>
+      <a href="#auth">Authentication</a>
+      <a href="#products">Products</a>
+      <a href="#categories">Categories</a>
+      <a href="#banners">Banners</a>
+      <a href="#orders">Orders</a>
+      <a href="#users">Users</a>
+      <a href="#wishlist">Wishlist</a>
+    </nav>
+
+    <main>
+      <section id="conventions">
+        <h2>Conventions</h2>
+        <div class="endpoint">
+          <p class="desc">Most successful responses use <code>{ "success": true, ... }</code>. Errors use <code>{ "success": false, "message": "..." }</code> (and sometimes <code>HTTP 4xx/5xx</code>).</p>
+          <p class="label">Protected routes</p>
+          <p class="desc">Send header: <code>Authorization: Bearer &lt;token&gt;</code> (JWT from <code>POST /auth/login</code> or <code>POST /auth/register</code>).</p>
+          <p class="label">Content-Type</p>
+          <p class="desc">Use <code>Content-Type: application/json</code> for bodies.</p>
+        </div>
+      </section>
+
+      <section id="auth">
+        <h2>Authentication</h2>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/auth/register</span></h3>
+          <p class="desc">Create an account. Returns a JWT.</p>
+          <p class="label">Request body</p>
+          <pre>{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "min-length-per-server"
+}</pre>
+          <p class="desc">Password length is enforced in <code>authController</code> (currently a minimum of 4 characters — adjust in code for production).</p>
+          <p class="label">Response <code>201</code></p>
+          <pre>{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "…",
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "role": "user",
+      "phone": null,
+      "address": null,
+      "city": null,
+      "state": null,
+      "zip": null,
+      "country": null,
+      "image": null,
+      "isActive": true,
+      "isVerified": false,
+      "createdAt": "…",
+      "updatedAt": "…"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"
+  }
+}</pre>
+          <p class="label">Errors</p>
+          <p class="desc"><code>400</code> missing fields / short password · <code>409</code> email already registered</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/auth/login</span></h3>
+          <p class="desc">Sign in. Rate limited (same as register).</p>
+          <p class="label">Request body</p>
+          <pre>{
+  "email": "jane@example.com",
+  "password": "your-password"
+}</pre>
+          <p class="label">Response <code>200</code></p>
+          <pre>{
+  "success": true,
+  "data": {
+    "user": { "id": "…", "name": "…", "email": "…", "role": "user", "…": "…" },
+    "token": "eyJhbGciOiJIUzI1NiIs…"
+  }
+}</pre>
+          <p class="label">Errors</p>
+          <p class="desc"><code>401</code> invalid credentials · <code>403</code> account disabled (<code>isActive: false</code>)</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/auth/logout</span></h3>
+          <p class="desc">Acknowledges logout; clear the token on the client. Clears auth cookies if your app sets them.</p>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "message": "Logged out successfully" }</pre>
+        </div>
+      </section>
+
+      <section id="products">
+        <h2>Products</h2>
+        <p class="desc" style="color:var(--muted); margin:-0.5rem 0 1rem;">List routes such as <code>/featured</code> and <code>/discounted</code> should be defined before <code>/:id</code> in the router so they are not parsed as IDs.</p>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/products</span></h3>
+          <p class="desc">Paginated product list.</p>
+          <p class="label">Query</p>
+          <pre>?page=1&amp;limit=10&amp;category=&lt;categoryObjectId&gt;&amp;categoryId=&lt;same&gt;</pre>
+          <p class="label">Response <code>200</code></p>
+          <pre>{
+  "success": true,
+  "data": [ { "_id": "…", "name": "…", "price": 99.99, "category": "…", "…": "…" } ],
+  "meta": {
+    "total": 120,
+    "page": 1,
+    "limit": 10,
+    "pages": 12,
+    "hasNext": true,
+    "hasPrev": false
+  }
+}</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/products/featured</span></h3>
+          <p class="desc">Featured products (same pagination / category filters as list, if implemented).</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/products/discounted</span></h3>
+          <p class="desc">Products with a discount.</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/products/highest-discounted</span></h3>
+          <p class="desc">Highest discount products (per controller).</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/products/:id</span></h3>
+          <p class="desc"><code>:id</code> = MongoDB ObjectId string.</p>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": { "_id": "…", "name": "…", "price": 0, "…": "…" } }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/products</span></h3>
+          <p class="desc">Create product (add admin guard in production).</p>
+          <p class="label">Request body</p>
+          <pre>{
+  "name": "Product",
+  "description": "At least 10 chars…",
+  "price": 99.99,
+  "discountPrice": 79.99,
+  "category": "&lt;categoryObjectId&gt;",
+  "image": "https://…",
+  "isFeatured": false,
+  "specs": {}
+}</pre>
+          <p class="label">Response <code>201</code></p>
+          <pre>{ "success": true, "data": { … } }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method put">PUT</span> <span class="path">/api/v1/products/:id</span></h3>
+          <p class="desc">Replace / update fields (per your controller).</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/products/:id</span></h3>
+          <p class="desc">Delete product.</p>
+        </div>
+      </section>
+
+      <section id="categories">
+        <h2>Categories</h2>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/categories</span></h3>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": [ { "_id": "…", "name": "Laptops", "icon": "…", "image": "…" } ] }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/categories/:id</span></h3>
+          <p class="desc">Single category; may include populated <code>products</code> if your controller uses virtual populate.</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/categories</span></h3>
+          <p class="label">Request body</p>
+          <pre>{ "name": "Tablets", "icon": "tablet", "image": "https://…" }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method put">PUT</span> <span class="path">/api/v1/categories/:id</span></h3>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/categories/:id</span></h3>
+        </div>
+      </section>
+
+      <section id="banners">
+        <h2>Banners</h2>
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/banners</span></h3>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": [ { "title": "…", "subtitle": "…", "image": "…", "cta": "…", "link": "…", "color": "…" } ] }</pre>
+        </div>
+      </section>
+
+      <section id="orders">
+        <h2>Orders</h2>
+        <p class="desc" style="color:var(--muted); margin:-0.5rem 0 1rem;">All routes require <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/orders</span></h3>
+          <p class="desc">Create an order for the authenticated user.</p>
+          <p class="label">Request body</p>
+          <pre>{
+  "items": [
+    {
+      "product": "&lt;productObjectId&gt;",
+      "name": "Product name",
+      "quantity": 2,
+      "image": "https://example.com/image.jpg",
+      "price": 99.99
+    }
+  ],
+  "shippingAddress": {
+    "address": "123 Main St",
+    "city": "Ulaanbaatar",
+    "postalCode": "14200",
+    "country": "MN"
+  },
+  "paymentMethod": "card",
+  "paymentResult": {
+    "id": "payment-ref",
+    "status": "completed",
+    "update_time": "…",
+    "email_address": "payer@example.com"
+  },
+  "itemsPrice": 199.98,
+  "taxPrice": 16,
+  "shippingPrice": 9.99,
+  "totalPrice": 225.97
+}</pre>
+          <p class="label">Response <code>201</code></p>
+          <pre>{ "success": true, "data": { "_id": "…", "user": "…", "orderItems": [ … ], "…": "…" } }</pre>
+          <p class="label">Validation</p>
+          <p class="desc"><code>paymentMethod</code> must be <code>card</code>, <code>cash</code>, or <code>bank_transfer</code>. <code>taxPrice</code> and <code>totalPrice</code> are required numbers.</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/orders/my-orders</span></h3>
+          <p class="desc">Orders for the current user.</p>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": [ { "_id": "…", "orderItems": [ … ], "…": "…" } ] }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/orders/:id</span></h3>
+          <p class="desc">Single order (<code>user</code> populated with <code>name</code>, <code>email</code> in controller).</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method put">PUT</span> <span class="path">/api/v1/orders/:id/pay</span></h3>
+          <p class="desc">Marks order paid (<code>isPaid</code>, <code>paidAt</code>).</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method put">PUT</span> <span class="path">/api/v1/orders/:id/deliver</span></h3>
+          <p class="desc">Marks order delivered.</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/orders</span></h3>
+          <p class="desc">All orders (admin-style listing in controller). Ensure this route is registered <strong>before</strong> <code>GET /:id</code> in Express or <code>/</code> may never match as intended.</p>
+        </div>
+      </section>
+
+      <section id="users">
+        <h2>Users</h2>
+        <p class="desc" style="color:var(--muted); margin:-0.5rem 0 1rem;">Requires Bearer token. Typically restrict updates so users can only modify their own <code>:id</code>.</p>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/users/:id</span></h3>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": { "_id": "…", "name": "…", "email": "…", "…": "…" } }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method put">PUT</span> <span class="path">/api/v1/users/:id</span></h3>
+          <p class="label">Request body</p>
+          <pre>{
+  "name": "Jane Doe",
+  "phone": "+976…",
+  "address": "Street",
+  "city": "City",
+  "state": "State",
+  "zip": "12345",
+  "country": "MN"
+}</pre>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": { … } }</pre>
+          <p class="label">Errors</p>
+          <p class="desc"><code>400</code> if any of the fields above is missing.</p>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/users/:id</span></h3>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "message": "User deleted successfully" }</pre>
+        </div>
+      </section>
+
+      <section id="wishlist">
+        <h2>Wishlist</h2>
+        <p class="desc" style="color:var(--muted); margin:-0.5rem 0 1rem;">Requires Bearer token.</p>
+
+        <div class="endpoint">
+          <h3><span class="method get">GET</span> <span class="path">/api/v1/wishlist</span></h3>
+          <p class="desc">Returns wishlist document(s) for the user with populated <code>products</code>.</p>
+          <p class="label">Response <code>200</code></p>
+          <pre>{
+  "success": true,
+  "data": [
+    {
+      "_id": "…",
+      "user": "…",
+      "products": [ { "_id": "…", "name": "…", "price": 0, "…": "…" } ]
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method post">POST</span> <span class="path">/api/v1/wishlist/add</span></h3>
+          <p class="label">Request body</p>
+          <pre>{ "productId": "&lt;productObjectId&gt;" }</pre>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": { "_id": "…", "user": "…", "products": [ … ] } }</pre>
+        </div>
+
+        <div class="endpoint">
+          <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/wishlist/remove</span></h3>
+          <p class="desc">Send JSON body with <code>productId</code> (some clients use DELETE with body).</p>
+          <p class="label">Request body</p>
+          <pre>{ "productId": "&lt;productObjectId&gt;" }</pre>
+          <p class="label">Response <code>200</code></p>
+          <pre>{ "success": true, "data": { … } }</pre>
+        </div>
+      </section>
+
+      <p class="note">
+        <strong>Note:</strong> This page is static. If you add routes (e.g. cart), update this file or generate docs from OpenAPI.
+        Order item shape may match your <code>Order</code> schema exactly — align <code>orderItems</code> fields with <code>models/Order.js</code>.
+      </p>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var el = document.getElementById('base-display');
+      if (el && window.location.origin) {
+        el.textContent = window.location.origin + '/api/v1';
+      }
+    })();
+  </script>
+</body>
 </html>
