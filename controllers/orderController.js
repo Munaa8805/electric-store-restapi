@@ -24,9 +24,7 @@ export const addOrderItems = async (req, res, next) => {
         if (!taxPrice || typeof taxPrice !== 'number') {
             return res.status(400).json({ success: false, message: 'Tax price is required' });
         }
-        if (!shippingPrice || typeof shippingPrice !== 'number') {
-            return res.status(400).json({ success: false, message: 'Shipping price is required' });
-        }
+
         if (!totalPrice || typeof totalPrice !== 'number') {
             return res.status(400).json({ success: false, message: 'Total price is required' });
         }
